@@ -1,0 +1,1 @@
+"""KnowledgeSmith AI — Application package."""

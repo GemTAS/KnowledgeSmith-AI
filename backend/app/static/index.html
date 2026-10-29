@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnowledgeSmith AI — Autonomous Knowledge Engineering Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #090d16;
+            --bg-surface: #111827;
+            --bg-card: rgba(17, 24, 39, 0.7);
+            --bg-card-hover: rgba(30, 41, 59, 0.85);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-focus: #06b6d4;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --accent-purple: #8b5cf6;
+            --radius-lg: 14px;
+            --radius-md: 8px;
+            --radius-sm: 6px;
+            --shadow-glow: 0 0 25px rgba(6, 182, 212, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: radial-gradient(circle at 10% 10%, #0d1527 0%, var(--bg-base) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+        }
+
+        .brand-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(to right, #f8fafc, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-subtitle {
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 9999px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--accent-emerald);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-emerald);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.9); }
+        }
+
+        /* Nav Tabs */
+        .tabs-nav {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.8rem 2rem;
+            background: rgba(17, 24, 39, 0.4);
+            border-bottom: 1px solid var(--border-subtle);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .tab-btn.active {
+            color: var(--accent-cyan);
+            background: rgba(6, 182, 212, 0.12);
+            border-color: rgba(6, 182, 212, 0.3);
+        }
+
+        /* Main Container */
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1440px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.25s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: rgba(255, 255, 255, 0.18);
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.4rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-subtext {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .grade-badge {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--accent-emerald);
+            color: var(--accent-emerald);
+        }
+
+        /* Action Panel */
+        .panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 0.85rem;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1fr auto;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-input {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 0.65rem 0.9rem;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 0.7rem 1.4rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-top: 1.25rem;
+            display: none;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+        }
+
+        .progress-bar-bg {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 9999px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Console Log Window */
+        .console-logs {
+            background: #050811;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #38bdf8;
+            max-height: 220px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .log-entry {
+            margin-bottom: 0.25rem;
+            line-height: 1.4;
+        }
+
+        /* Concept Explorer */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 0.65rem 1rem 0.65rem 2.2rem;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .type-pills {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .type-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            padding: 0.35rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .type-pill.active, .type-pill:hover {
+            background: rgba(6, 182, 212, 0.15);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .concepts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .concept-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .concept-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(6, 182, 212, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .concept-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 0.6rem;
+        }
+
+        .concept-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .concept-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: var(--radius-sm);
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .concept-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .concept-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 0.8rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .tag-list {
+            display: flex;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+        }
+
+        .tag-item {
+            font-size: 0.7rem;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 0.15rem 0.4rem;
+            border-radius: var(--radius-sm);
+            color: #cbd5e1;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 2rem;
+        }
+
+        .modal {
+            background: #0f172a;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 760px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .claim-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Graph Canvas */
+        .graph-wrapper {
+            position: relative;
+            background: #060912;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            height: 600px;
+        }
+
+        canvas#graphCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .graph-controls {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .ctrl-btn {
+            background: rgba(17, 24, 39, 0.85);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+        }
+
+        /* Tables */
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        .styled-table th {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .styled-table td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+        }
+
+        .styled-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-primary);
+        }
+
+        .badge-pill {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+
+        .badge-error { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+        .badge-warn { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-pass { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-info { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <div class="brand-icon">K</div>
+            <div>
+                <div class="brand-title">KnowledgeSmith AI</div>
+                <div class="brand-subtitle">Autonomous Knowledge Engineering Platform</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                <span id="systemStatus">Ready / Idle</span>
+            </div>
+            <a href="/docs" target="_blank" style="color:var(--text-secondary);text-decoration:none;font-size:0.85rem;border:1px solid var(--border-subtle);padding:0.4rem 0.8rem;border-radius:var(--radius-md);">Swagger API</a>
+        </div>
+    </header>
+
+    <div class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab('overview')">Overview & Pipeline</button>
+        <button class="tab-btn" onclick="switchTab('concepts')">Concept Explorer</button>
+        <button class="tab-btn" onclick="switchTab('graph')">Knowledge Graph</button>
+        <button class="tab-btn" onclick="switchTab('validation')">Validation & Spec</button>
+        <button class="tab-btn" onclick="switchTab('benchmark')">Evaluation & Benchmark</button>
+        <button class="tab-btn" onclick="switchTab('changes')">Incremental Changes</button>
+    </div>
+
+    <main>
+        <!-- Tab 1: Overview & Pipeline -->
+        <div id="tab-overview" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Concepts</div>
+                    <div class="stat-value" id="statConcepts">0</div>
+                    <div class="stat-subtext">OKF artifacts created</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Extracted Claims</div>
+                    <div class="stat-value" id="statClaims">0</div>
+                    <div class="stat-subtext">Factual assertions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Relationships</div>
+                    <div class="stat-value" id="statRels">0</div>
+                    <div class="stat-subtext">Directed graph edges</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Health Score</div>
+                    <div class="stat-value" id="statHealth">--</div>
+                    <div class="stat-subtext">Composite benchmark</div>
+                    <div class="grade-badge" id="gradeBadge">-</div>
+                </div>
+            </div>
+
+            <!-- Run Pipeline Control Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span>⚡ Autonomous Knowledge Pipeline</span>
+                    </div>
+                    <span style="font-size:0.85rem;color:var(--text-muted);">OKF v0.2 Specification Compliant</span>
+                </div>
+                <form id="pipelineForm" onsubmit="triggerPipeline(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Source Input Directory</label>
+                            <input type="text" id="inputDir" class="form-input" value="." placeholder="e.g. ./examples/sample_project">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">OKF Output Directory</label>
+                            <input type="text" id="outputDir" class="form-input" value="./output" placeholder="./output">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">LLM Extraction</label>
+                            <select id="useLlm" class="form-input">
+                                <option value="false">Deterministic Only (Fast, Offline)</option>
+                                <option value="true">Gemini LLM + Deterministic</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-primary" id="runBtn">
+                            <span>Execute Pipeline</span>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="progress-container" id="progressBox">
+                    <div class="progress-header">
+                        <span id="progressStage">Running Ingestion...</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="progressBar"></div>
+                    </div>
+                </div>
+
+                <div class="console-logs" id="consoleLogs"></div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Concept Explorer -->
+        <div id="tab-concepts" class="tab-content">
+            <div class="filter-bar">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="conceptSearch" class="search-input" placeholder="Search concepts by title, keyword, or tag..." oninput="handleSearch()">
+                </div>
+                <div class="type-pills" id="typePills">
+                    <div class="type-pill active" onclick="filterType('')">All</div>
+                    <div class="type-pill" onclick="filterType('Class')">Class</div>
+                    <div class="type-pill" onclick="filterType('Function')">Function</div>
+                    <div class="type-pill" onclick="filterType('Module')">Module</div>
+                    <div class="type-pill" onclick="filterType('API')">API</div>
+                    <div class="type-pill" onclick="filterType('Configuration')">Configuration</div>
+                </div>
+            </div>
+            <div class="concepts-grid" id="conceptsGrid">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <!-- Tab 3: Knowledge Graph -->
+        <div id="tab-graph" class="tab-content">
+            <div class="graph-wrapper">
+                <div class="graph-controls">
+                    <button class="ctrl-btn" onclick="resetGraphView()">Center View</button>
+                    <button class="ctrl-btn" onclick="refreshGraph()">Reload Graph</button>
+                </div>
+                <canvas id="graphCanvas"></canvas>
+            </div>
+        </div>
+
+        <!-- Tab 4: Validation & Compliance -->
+        <div id="tab-validation" class="tab-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Open Knowledge Format (OKF) Validation Findings</div>
+                    <span id="validationSummaryText" class="badge-pill badge-pass">Checking...</span>
+                </div>
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Severity</th>
+                            <th>Code</th>
+                            <th>Finding</th>
+                            <th>Target Concept</th>
+                        </tr>
+                    </thead>
+                    <tbody id="validationTableBody">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 5: Evaluation & Benchmark -->
+        <div id="tab-benchmark" class="tab-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Quality Benchmark Scorecard</div>
+                    <div id="benchmarkGradePill" class="badge-pill badge-pass">Score: --</div>
+                </div>
+                <p id="benchmarkSummaryText" style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1.5rem;"></p>
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Benchmark Check</th>
+                            <th>Threshold Target</th>
+                            <th>Observed Value</th>
+                            <th>Status</th>
+                            <th>Criteria Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="benchmarkTableBody">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 6: Incremental Changes -->
+        <div id="tab-changes" class="tab-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Source Delta & Change Detection</div>
+                    <span id="changesCountBadge" class="badge-pill badge-info">0 Deltas</span>
+                </div>
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>File Path</th>
+                            <th>Change Type</th>
+                            <th>Previous SHA-256</th>
+                            <th>Current SHA-256</th>
+                        </tr>
+                    </thead>
+                    <tbody id="changesTableBody">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Concept Details Modal -->
+    <div class="modal-overlay" id="conceptModal" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modalTitle" style="font-size:1.2rem;font-weight:600;"></h3>
+                    <span id="modalType" class="concept-badge" style="margin-top:0.3rem;display:inline-block;"></span>
+                </div>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="modalDesc" style="color:var(--text-secondary);margin-bottom:1.2rem;line-height:1.5;"></p>
+                <h4 style="font-size:0.95rem;margin-bottom:0.75rem;color:var(--accent-cyan);">Factual Claims & Provenance</h4>
+                <div id="modalClaims"></div>
+                <h4 style="font-size:0.95rem;margin:1.25rem 0 0.75rem;color:var(--accent-blue);">Relationships</h4>
+                <div id="modalRels"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        KnowledgeSmith AI &bull; Google Open Knowledge Format (OKF) v0.2 Implementation &bull; Resume Ready AI Architecture
+    </footer>
+
+    <script>
+        let allConcepts = [];
+        let currentTypeFilter = '';
+        let graphNodes = [];
+        let graphEdges = [];
+        let canvas, ctx;
+        let animationId;
+
+        async function fetchInitialData() {
+            try {
+                const [evalRes, conceptsRes, graphRes, valRes, changesRes] = await Promise.all([
+                    fetch('/api/evaluation').then(r => r.json()).catch(() => null),
+                    fetch('/api/concepts').then(r => r.json()).catch(() => ({ concepts: [] })),
+                    fetch('/api/graph').then(r => r.json()).catch(() => null),
+                    fetch('/api/validation').then(r => r.json()).catch(() => null),
+                    fetch('/api/changes').then(r => r.json()).catch(() => null)
+                ]);
+
+                if (evalRes && evalRes.metrics) {
+                    updateDashboardMetrics(evalRes);
+                }
+                if (conceptsRes && conceptsRes.concepts) {
+                    allConcepts = conceptsRes.concepts;
+                    renderConcepts(allConcepts);
+                }
+                if (graphRes) {
+                    graphNodes = graphRes.nodes || [];
+                    graphEdges = graphRes.edges || [];
+                    initGraphCanvas();
+                }
+                if (valRes) {
+                    renderValidation(valRes);
+                }
+                if (changesRes) {
+                    renderChanges(changesRes);
+                }
+            } catch (err) {
+                console.error("Data load failed:", err);
+            }
+        }
+
+        function updateDashboardMetrics(evalData) {
+            const m = evalData.metrics;
+            const b = evalData.benchmark;
+            document.getElementById('statConcepts').innerText = m.total_concepts || 0;
+            document.getElementById('statClaims').innerText = m.total_claims || 0;
+            document.getElementById('statRels').innerText = m.total_relationships || 0;
+            document.getElementById('statHealth').innerText = (m.composite_health_score || 0) + '%';
+            
+            const gradeBadge = document.getElementById('gradeBadge');
+            gradeBadge.innerText = b.letter_grade || 'A';
+
+            // Benchmark tab
+            document.getElementById('benchmarkGradePill').innerText = `Grade ${b.letter_grade || 'A'} (${b.overall_score || 100}%)`;
+            document.getElementById('benchmarkSummaryText').innerText = b.summary || '';
+            const bBody = document.getElementById('benchmarkTableBody');
+            bBody.innerHTML = (b.checks || []).map(c => `
+                <tr>
+                    <td style="font-weight:600;color:#f8fafc;">${c.name}</td>
+                    <td><code>${c.target}</code></td>
+                    <td><strong>${c.actual}</strong></td>
+                    <td><span class="badge-pill ${c.passed ? 'badge-pass' : 'badge-error'}">${c.passed ? 'PASSED' : 'FAILED'}</span></td>
+                    <td style="font-size:0.8rem;">${c.description}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderConcepts(concepts) {
+            const grid = document.getElementById('conceptsGrid');
+            if (!concepts.length) {
+                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-muted);">No concepts extracted yet. Run the pipeline above to process sources.</div>';
+                return;
+            }
+            grid.innerHTML = concepts.map(c => `
+                <div class="concept-card" onclick="openConceptModal('${c.concept_id}')">
+                    <div>
+                        <div class="concept-top">
+                            <span class="concept-title">${c.title}</span>
+                            <span class="concept-badge">${c.concept_type}</span>
+                        </div>
+                        <p class="concept-desc">${c.description || 'No description provided.'}</p>
+                    </div>
+                    <div class="concept-footer">
+                        <div class="tag-list">
+                            ${(c.tags || []).slice(0, 3).map(t => `<span class="tag-item">#${t}</span>`).join('')}
+                        </div>
+                        <span>${c.claims_count || 0} claims</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function openConceptModal(conceptId) {
+            try {
+                const res = await fetch(`/api/concepts/${conceptId}`);
+                if (!res.ok) return;
+                const c = await res.json();
+                document.getElementById('modalTitle').innerText = c.title;
+                document.getElementById('modalType').innerText = c.concept_type;
+                document.getElementById('modalDesc').innerText = c.description;
+
+                const claimsBox = document.getElementById('modalClaims');
+                claimsBox.innerHTML = (c.claims || []).length ? c.claims.map(cl => `
+                    <div class="claim-card">
+                        <div style="font-size:0.9rem;color:#f8fafc;margin-bottom:0.4rem;">${cl.statement}</div>
+                        <div style="display:flex;gap:0.5rem;font-size:0.75rem;">
+                            <span class="badge-pill ${cl.verification_status === 'human_reviewed' ? 'badge-pass' : 'badge-warn'}">${cl.verification_status}</span>
+                            <span class="badge-pill badge-info">${cl.extraction_method}</span>
+                            <span style="color:var(--text-muted);align-self:center;">${cl.source_count} source refs</span>
+                        </div>
+                    </div>
+                `).join('') : '<div style="color:var(--text-muted);font-size:0.85rem;">No explicit claims recorded.</div>';
+
+                const relsBox = document.getElementById('modalRels');
+                relsBox.innerHTML = (c.relationships || []).length ? c.relationships.map(r => `
+                    <div style="padding:0.4rem 0;font-size:0.85rem;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;">
+                        <span><strong>${r.relationship_type}</strong> &rarr; ${r.target_id}</span>
+                        <span style="color:var(--text-muted);">${r.evidence || ''}</span>
+                    </div>
+                `).join('') : '<div style="color:var(--text-muted);font-size:0.85rem;">No external relationships.</div>';
+
+                document.getElementById('conceptModal').style.display = 'flex';
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('conceptModal').style.display = 'none';
+        }
+
+        function renderValidation(val) {
+            const badge = document.getElementById('validationSummaryText');
+            badge.className = `badge-pill ${val.is_valid ? 'badge-pass' : 'badge-error'}`;
+            badge.innerText = val.is_valid ? 'Compliant (0 Errors)' : `${val.error_count} Errors Found`;
+
+            const tbody = document.getElementById('validationTableBody');
+            tbody.innerHTML = (val.issues || []).map(i => `
+                <tr>
+                    <td><span class="badge-pill ${i.severity === 'error' ? 'badge-error' : 'badge-warn'}">${i.severity.toUpperCase()}</span></td>
+                    <td><code>${i.code}</code></td>
+                    <td>${i.message}</td>
+                    <td><code>${i.concept_id || 'corpus'}</code></td>
+                </tr>
+            `).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);">No validation issues found. Perfectly valid OKF v0.2 bundle!</td></tr>';
+        }
+
+        function renderChanges(changesRes) {
+            document.getElementById('changesCountBadge').innerText = `${changesRes.total_changes || 0} Deltas`;
+            const tbody = document.getElementById('changesTableBody');
+            tbody.innerHTML = (changesRes.changes || []).map(c => `
+                <tr>
+                    <td><code>${c.file_path}</code></td>
+                    <td><span class="badge-pill badge-info">${c.change_type.toUpperCase()}</span></td>
+                    <td><code style="font-size:0.75rem;">${c.previous_hash ? c.previous_hash.slice(0, 16) : 'None'}</code></td>
+                    <td><code style="font-size:0.75rem;">${c.current_hash ? c.current_hash.slice(0, 16) : 'None'}</code></td>
+                </tr>
+            `).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);">No changes detected since prior manifest.</td></tr>';
+        }
+
+        async function triggerPipeline(e) {
+            e.preventDefault();
+            const inputDir = document.getElementById('inputDir').value;
+            const outputDir = document.getElementById('outputDir').value;
+            const useLlm = document.getElementById('useLlm').value === 'true';
+
+            const runBtn = document.getElementById('runBtn');
+            runBtn.disabled = true;
+            runBtn.innerText = 'Processing...';
+
+            const pBox = document.getElementById('progressBox');
+            const pBar = document.getElementById('progressBar');
+            const pStage = document.getElementById('progressStage');
+            const pPercent = document.getElementById('progressPercent');
+            const logsBox = document.getElementById('consoleLogs');
+
+            pBox.style.display = 'block';
+            logsBox.style.display = 'block';
+            logsBox.innerHTML = '<div class="log-entry">> Initializing KnowledgeSmith Autonomous Orchestrator...</div>';
+
+            try {
+                const res = await fetch('/api/pipeline/run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ input_dir: inputDir, output_dir: outputDir, use_llm: useLlm })
+                });
+                const data = await res.json();
+                
+                pBar.style.width = '100%';
+                pPercent.innerText = '100%';
+                pStage.innerText = 'Pipeline Complete!';
+                
+                if (data.recent_logs) {
+                    logsBox.innerHTML = data.recent_logs.map(l => `<div class="log-entry">> ${l}</div>`).join('');
+                    logsBox.scrollTop = logsBox.scrollHeight;
+                }
+
+                // Refresh app state
+                await fetchInitialData();
+            } catch (err) {
+                logsBox.innerHTML += `<div class="log-entry" style="color:#f43f5e;">> Error: ${err.message}</div>`;
+            } finally {
+                runBtn.disabled = false;
+                runBtn.innerText = 'Execute Pipeline';
+            }
+        }
+
+        function switchTab(name) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(`tab-${name}`).classList.add('active');
+            if (name === 'graph') {
+                setTimeout(initGraphCanvas, 50);
+            }
+        }
+
+        function handleSearch() {
+            const q = document.getElementById('conceptSearch').value.toLowerCase();
+            const filtered = allConcepts.filter(c => {
+                const matchQ = c.title.toLowerCase().includes(q) || (c.tags || []).some(t => t.toLowerCase().includes(q));
+                const matchT = !currentTypeFilter || c.concept_type.toLowerCase() === currentTypeFilter.toLowerCase();
+                return matchQ && matchT;
+            });
+            renderConcepts(filtered);
+        }
+
+        function filterType(type) {
+            currentTypeFilter = type;
+            document.querySelectorAll('.type-pill').forEach(p => p.classList.remove('active'));
+            event.target.classList.add('active');
+            handleSearch();
+        }
+
+        /* ── Simple Canvas Force Graph ────────────────────────────── */
+        let simNodes = [], simLinks = [];
+
+        function initGraphCanvas() {
+            canvas = document.getElementById('graphCanvas');
+            if (!canvas) return;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            ctx = canvas.getContext('2d');
+
+            if (!graphNodes.length) return;
+
+            simNodes = graphNodes.map((n, i) => ({
+                id: n.id,
+                title: n.title,
+                type: n.type,
+                x: canvas.width / 2 + (Math.random() - 0.5) * 300,
+                y: canvas.height / 2 + (Math.random() - 0.5) * 250,
+                vx: 0,
+                vy: 0,
+            }));
+
+            const nodeMap = new Map(simNodes.map(n => [n.id, n]));
+            simLinks = graphEdges.map(e => ({
+                source: nodeMap.get(e.source),
+                target: nodeMap.get(e.target),
+                type: e.type,
+            })).filter(l => l.source && l.target);
+
+            cancelAnimationFrame(animationId);
+            runGraphPhysics();
+        }
+
+        function runGraphPhysics() {
+            // Apply slight spring + repulsive force
+            for (let i = 0; i < simNodes.length; i++) {
+                for (let j = i + 1; j < simNodes.length; j++) {
+                    const dx = simNodes[j].x - simNodes[i].x;
+                    const dy = simNodes[j].y - simNodes[i].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                    if (dist < 180) {
+                        const force = (180 - dist) / dist * 0.05;
+                        simNodes[i].vx -= dx * force;
+                        simNodes[i].vy -= dy * force;
+                        simNodes[j].vx += dx * force;
+                        simNodes[j].vy += dy * force;
+                    }
+                }
+            }
+
+            for (const link of simLinks) {
+                const dx = link.target.x - link.source.x;
+                const dy = link.target.y - link.source.y;
+                const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                const force = (dist - 120) * 0.02;
+                link.source.vx += (dx / dist) * force;
+                link.source.vy += (dy / dist) * force;
+                link.target.vx -= (dx / dist) * force;
+                link.target.vy -= (dy / dist) * force;
+            }
+
+            // Draw
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw edges
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 1.2;
+            for (const link of simLinks) {
+                ctx.beginPath();
+                ctx.moveTo(link.source.x, link.source.y);
+                ctx.lineTo(link.target.x, link.target.y);
+                ctx.stroke();
+            }
+
+            // Draw nodes
+            for (const node of simNodes) {
+                node.x += node.vx;
+                node.y += node.vy;
+                node.vx *= 0.88;
+                node.vy *= 0.88;
+
+                // Color by type
+                let color = '#38bdf8';
+                if (node.type === 'Class') color = '#a855f7';
+                else if (node.type === 'Function') color = '#10b981';
+                else if (node.type === 'Module') color = '#f59e0b';
+
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 8, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.shadowColor = color;
+                ctx.shadowBlur = 8;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = '11px Outfit, sans-serif';
+                ctx.fillText(node.title, node.x + 12, node.y + 4);
+            }
+
+            animationId = requestAnimationFrame(runGraphPhysics);
+        }
+
+        function resetGraphView() {
+            initGraphCanvas();
+        }
+
+        function refreshGraph() {
+            fetch('/api/graph').then(r => r.json()).then(res => {
+                graphNodes = res.nodes || [];
+                graphEdges = res.edges || [];
+                initGraphCanvas();
+            });
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', fetchInitialData);
+    </script>
+</body>
+</html>
